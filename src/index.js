@@ -1,13 +1,26 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import App from './App';
+import App from './components/App';
+import { ThemeProvider, StyleReset } from 'atomize';
 import reportWebVitals from './reportWebVitals';
+
+
+const theme = {
+  colors: {
+    primary: 'tomato',
+    accent: 'yellow',
+  },
+};
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    <ThemeProvider theme={theme}>
+      <StyleReset />
+      <App />
+    </ThemeProvider>
   </React.StrictMode>
 );
 
