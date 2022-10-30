@@ -37,18 +37,17 @@ export class MedicalInformation extends Component {
                             <Grid sx={{ flexGrow: 1 }} container spacing={2} justifyContent="right" alignItems="right">
                                 <Grid item xs={12}>
                                     <Grid container justifyContent="center" spacing={2}>
-                                        {[0, 1, 2].map((value) => (
+                                        {[0, 1, 2, 3, 4, 5].map((value) => (
                                             <Grid key={value} item>
                                                 <Card
                                                     sx={{ display: 'flex', flexDirection: 'column' }}
                                                 >
                                                     <CardContent sx={{ flexGrow: 1 }}>
                                                         <Typography gutterBottom variant="h5" component="h2">
-                                                            HL Pro
+                                                            Latest News/Information in the Health Industry
                                                         </Typography>
                                                         <Typography>
-                                                            This is a media card. You can use this section to describe the
-                                                            content.
+                                                            Links and Information on the latest news/information and suggestions in the health industry
                                                         </Typography>
                                                     </CardContent>
                                                 </Card>

@@ -37,18 +37,17 @@ export class FitnessCenter extends Component {
                             <Grid sx={{ flexGrow: 1 }} container spacing={2}>
                                 <Grid item xs={12}>
                                     <Grid container justifyContent="center" spacing={2}>
-                                        {[0, 1, 2].map((value) => (
+                                        {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((value) => (
                                             <Grid key={value} item>
                                                 <Card
                                                     sx={{ display: 'flex', flexDirection: 'column' }}
                                                 >
                                                     <CardContent sx={{ flexGrow: 1 }}>
                                                         <Typography gutterBottom variant="h5" component="h2">
-                                                            HL Pro
+                                                            Workout Suggestion/Fitness Tip
                                                         </Typography>
                                                         <Typography>
-                                                            This is a media card. You can use this section to describe the
-                                                            content.
+                                                            Workout Suggestion/Fitness Tip with Links and Images and In an ideal version a workout start process
                                                         </Typography>
                                                     </CardContent>
                                                 </Card>
