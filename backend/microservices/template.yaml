@@ -1,0 +1,138 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Microservices for the oncampus day
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 3
+    MemorySize: 128
+
+Resources:
+  # PostDataClicksFunction:
+  #   Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+  #   Properties:
+  #     CodeUri: post_data_clicks/
+  #     Handler: app.lambdaHandler
+  #     Runtime: nodejs14.x
+  #     Architectures:
+  #       - x86_64
+  #     Events:
+  #       GetMetadata:
+  #         Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+  #         Properties:
+  #           Path: /post_data_click
+  #           Method: post
+  #     Policies:
+  #       - AmazonDynamoDBFullAccess
+
+  # PostDataHealthFunction:
+  #   Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+  #   Properties:
+  #     CodeUri: post_data_health/
+  #     Handler: app.lambdaHandler
+  #     Runtime: nodejs14.x
+  #     Architectures:
+  #       - x86_64
+  #     Events:
+  #       GetMetadata:
+  #         Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+  #         Properties:
+  #           Path: /post_data_health
+  #           Method: post
+  #     Policies:
+  #       - AmazonDynamoDBFullAccess
+
+  # GetRecommendationsFunction:
+  #   Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+  #   Properties:
+  #     CodeUri: get_recommendations/
+  #     Handler: app.lambdaHandler
+  #     Runtime: nodejs14.x
+  #     Architectures:
+  #       - x86_64
+  #     Events:
+  #       GetMetadata:
+  #         Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+  #         Properties:
+  #           Path: /get_recommendations
+  #           Method: post
+  #     Policies:
+  #       - AmazonDynamoDBFullAccess
+
+  # GetStatsFunction:
+  #   Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+  #   Properties:
+  #     CodeUri: get_stats/
+  #     Handler: app.lambdaHandler
+  #     Runtime: nodejs14.x
+  #     Architectures:
+  #       - x86_64
+  #     Events:
+  #       GetMetadata:
+  #         Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+  #         Properties:
+  #           Path: /get_stats
+  #           Method: post
+  #     Policies:
+  #       - AmazonDynamoDBFullAccess
+
+  # UserLoginFunction:
+  #   Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+  #   Properties:
+  #     CodeUri: user_login/
+  #     Handler: app.lambdaHandler
+  #     Runtime: nodejs14.x
+  #     Architectures:
+  #       - x86_64
+  #     Events:
+  #       GetMetadata:
+  #         Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+  #         Properties:
+  #           Path: /user_login
+  #           Method: post
+  #     Policies:
+  #       - AmazonDynamoDBFullAccess
+
+  UserRegistrationFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: user_registration/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      Events:
+        GetMetadata:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /user_registration
+            Method: post
+      Policies:
+        - AmazonDynamoDBFullAccess
+
+  UserLoginFunction:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: user_login/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      Events:
+        GetMetadata:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /login
+            Method: post
+      Policies:
+        - AmazonDynamoDBFullAccess
+
+Outputs:
+  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
+  # Find out more about other implicit resources you can reference within SAM
+  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
+  MicroserviceApi:
+    Description: "API Gateway endpoint URL for Prod stage for microservices"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
