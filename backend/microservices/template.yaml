@@ -30,7 +30,7 @@ Resources:
   PostDataHealthFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      CodeUri: post_data_health/
+      CodeUri: post_user_data/
       Handler: app.lambdaHandler
       Runtime: nodejs14.x
       Architectures:
@@ -39,7 +39,7 @@ Resources:
         GetMetadata:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
-            Path: /post_data_health
+            Path: /post_data
             Method: post
       Policies:
         - AmazonDynamoDBFullAccess
