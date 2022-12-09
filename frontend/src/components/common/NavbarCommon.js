@@ -22,8 +22,22 @@ import { FitnessCenter } from "../User/Dashboard/FitnessCenter";
 import { Diet } from "../User/Dashboard/Diet";
 import { MedicalInformation } from "../User/Dashboard/MedicalInformation";
 import { Stats } from "../User/Dashboard/Stats";
+import { Navigate } from "react-router-dom";
+import { connect } from "react-redux";
 
-export class NavbarCommon extends Component {
+
+const ProtectedRoute = ({ isLoggedIn, children }) => {
+    if (!isLoggedIn) {
+        return <Navigate to="/login" replace />;
+    }
+
+    return children;
+};
+
+class NavbarCommon extends Component {
+    constructor(props) {
+        super(props)
+    }
 
     render() {
         return (
@@ -48,11 +62,27 @@ export class NavbarCommon extends Component {
                             <Route path="*" element={<NotFound />} />
                             <Route path="login" element={<Login />} />
                             <Route path="register" element={<Register />} />
-                            <Route path="dashboard" element={<Dashboard />} />
-                            <Route path="/Diet" element={<Diet />} />
-                            <Route path="/Fitness Center" element={<FitnessCenter />} />
-                            <Route path="/Medical Information" element={<MedicalInformation />} />
-                            <Route path="/Monitor Stats" element={<Stats />} />
+
+                            <Route path="dashboard" element={
+                                <ProtectedRoute isLoggedIn={this.props.isLoggedIn.value}>
+                                    <Dashboard />
+                                </ProtectedRoute>
+                            } />
+                            <Route path="/Diet" element={
+                                <ProtectedRoute isLoggedIn={this.props.isLoggedIn.value}>
+                                    <Diet />
+                                </ProtectedRoute>} />
+                            <Route path="/Fitness Center" element={
+                                <ProtectedRoute isLoggedIn={this.props.isLoggedIn.value}>
+                                    <FitnessCenter />
+                                </ProtectedRoute>} />
+                            <Route path="/Medical Information" element={
+                                <ProtectedRoute isLoggedIn={this.props.isLoggedIn.value}>
+                                    <MedicalInformation />
+                                </ProtectedRoute>} />
+                            <Route path="/Monitor Stats" element={<ProtectedRoute isLoggedIn={this.props.isLoggedIn.value}>
+                                <Stats />
+                            </ProtectedRoute>} />
                         </Routes>
                     </Router>
                 </ThemeProvider>
@@ -60,3 +90,15 @@ export class NavbarCommon extends Component {
         )
     }
 }
+
+
+const mapStateToProps = (state) => {
+    return {
+        isLoggedIn: state.isLoggedIn,
+        apiToken: state.apiToken
+    }
+}
+
+NavbarCommon = connect(mapStateToProps, null)(NavbarCommon)
+
+export { NavbarCommon }

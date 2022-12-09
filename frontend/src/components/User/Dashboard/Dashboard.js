@@ -6,9 +6,14 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import CssBaseline from "@mui/material/CssBaseline";
 import Box from '@mui/material/Box';
+import { connect } from "react-redux";
 
-export class Dashboard extends Component {
+class Dashboard extends Component {
 
+    constructor(props) {
+        super(props)
+        console.log(props)
+    }
     render() {
         return (
             <>
@@ -34,7 +39,6 @@ export class Dashboard extends Component {
                             <Typography component="h4" variant="h6" color="text.primary" alignContent="center">
 
                                 User Dashboard shows information summarised from the different dashboards.
-
                                 Use the sidebar to navigate between the different dashboards
                             </Typography>
                         </Box>
@@ -45,3 +49,14 @@ export class Dashboard extends Component {
         )
     }
 }
+
+const mapStateToProps = (state) => {
+    return {
+        isLoggedIn: state.isLoggedIn,
+        apiToken: state.apiToken
+    }
+}
+
+Dashboard = connect(mapStateToProps, null)(Dashboard)
+
+export { Dashboard }

@@ -46,7 +46,11 @@ exports.lambdaHandler = async (event, context) => {
         statusCode: 200,
         body: JSON.stringify({}),
         isBase64Encoded: false,
-        headers: {}
+        headers: {
+            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "POST"
+        }
     }
 
     try {

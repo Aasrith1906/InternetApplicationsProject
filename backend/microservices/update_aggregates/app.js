@@ -5,6 +5,7 @@
 let response;
 var AWS = require('aws-sdk');
 var ddb = new AWS.DynamoDB({ apiVersion: '2012-08-10' });
+var s3 = new AWS.S3()
 AWS.config.update({ region: 'eu-west-2' });
 
 /**

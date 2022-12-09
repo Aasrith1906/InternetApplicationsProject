@@ -2,6 +2,7 @@
 // const url = 'http://checkip.amazonaws.com/';
 let response;
 var AWS = require('aws-sdk');
+const jwt = require("jsonwebtoken");
 var ddb = new AWS.DynamoDB({ apiVersion: '2012-08-10' });
 AWS.config.update({ region: 'eu-west-2' });
 
@@ -19,6 +20,13 @@ AWS.config.update({ region: 'eu-west-2' });
  */
 
 
+async function signToken(user) {
+    const secret = Buffer.from(process.env.JWT_SECRET, "base64");
+
+    return jwt.sign({ username: user.username.S, roles: ["USER"] }, secret, {
+        expiresIn: 86400 // expires in 24 hours
+    });
+}
 
 async function checkUserExists(ddb, username) {
     var params = {
@@ -45,7 +53,11 @@ exports.lambdaHandler = async (event, context) => {
         statusCode: 200,
         body: JSON.stringify({}),
         isBase64Encoded: false,
-        headers: {}
+        headers: {
+            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "POST"
+        }
     }
 
     try {
@@ -55,15 +67,16 @@ exports.lambdaHandler = async (event, context) => {
         item_params = event
         var continue_ = await checkUserExists(ddb, item_params.username.S)
         if (continue_ == false) {
-            response.statusCode = 404
+            response.statusCode = 200
             response.body = JSON.stringify({ "message": "user doesn't exists" })
             return response
         }
 
         item = continue_.Item
         if (item.password.S === item_params.password.S) {
+            jwtToken = await signToken(item)
             response.statusCode = 200
-            response.body = JSON.stringify({ "data": "User Authenticated" })
+            response.body = JSON.stringify({ "message": "User Authenticated", "token": jwtToken })
             return response
 
         } else {
