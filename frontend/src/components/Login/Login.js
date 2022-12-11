@@ -18,6 +18,7 @@ import { encryptString } from "../common/Encrypt";
 import { ThemeProvider } from '@mui/material';
 import { setTrue } from "../common/redux/loggedInSlicer";
 import { setToken } from "../common/redux/apiTokenSlicer";
+import { setData } from "../common/redux/userInfoSlicer";
 import { connect } from "react-redux"
 import { useDispatch } from 'react-redux'
 import Alert from "@mui/material/Alert";
@@ -28,13 +29,13 @@ class Login extends Component {
 
     constructor(props) {
         super(props)
-        this.state = { redirect: false }
+        this.state = { redirect: false, error: false, loginError: false }
         this.handleSubmit = this.handleSubmit.bind(this)
 
     }
 
     validateForm(form_data) {
-        return form_data.email.length > 0 && form_data.password.length > 0;
+        return form_data.username.length > 0 && form_data.password.length > 0;
     }
 
     updateState = () => {
@@ -46,12 +47,14 @@ class Login extends Component {
         const data = new FormData(event.currentTarget);
         var api_params = {
             username: data.get('email'),
-            password: encryptString(data.get('password'))
+            password: data.get('password')
         }
-
-        console.log(api_params)
+        var validation = this.validateForm(api_params)
+        if (validation == false) {
+            this.setState({ error: true })
+        }
+        api_params["password"] = encryptString(api_params["password"])
         var api_params_marshalled = ddbMarshall(api_params)
-        console.log(api_params_marshalled)
 
         axios.post(
             API_URL + "/login",
@@ -62,13 +65,14 @@ class Login extends Component {
             if (r.status == 200) {
                 this.updateState()
                 this.props.setToken(r.data.token)
-                console.log(this.props)
-                console.log(r.data.token)
+                this.props.setData({ username: api_params.username })
+            } else {
+                this.setState({ error: true })
             }
 
         }).catch(
             (e) => {
-                console.log(e)
+                this.setState({ loginError: true })
             }
         )
     }
@@ -89,6 +93,18 @@ class Login extends Component {
                                 alignItems: 'center',
                             }}
                         >
+                            <br></br>
+                            {
+                                this.state.error && (
+                                    <Alert severity="error">Login Error !!!</Alert>
+                                )
+                            }
+                            {
+                                this.state.loginError && (
+                                    <Alert severity="error">Login Failed !!!</Alert>
+                                )
+                            }
+                            <br></br>
                             <Avatar sx={{ m: 1, bgcolor: 'primary.main' }}>
                                 <LoginIcon />
                             </Avatar>
@@ -100,6 +116,8 @@ class Login extends Component {
                                     margin="normal"
                                     required
                                     fullWidth
+                                    error={this.state.error}
+                                    helperText={this.state.error && ("Incorrect Entry")}
                                     id="email"
                                     label="Email Address"
                                     name="email"
@@ -111,6 +129,8 @@ class Login extends Component {
                                     margin="normal"
                                     required
                                     fullWidth
+                                    error={this.state.error}
+                                    helperText={this.state.error && ("Incorrect Entry")}
                                     name="password"
                                     label="Password"
                                     type="password"
@@ -163,7 +183,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch, ownProps) => {
     return {
         setTrue: () => dispatch(setTrue()),
-        setToken: (token) => dispatch(setToken(token))
+        setToken: (token) => dispatch(setToken(token)),
+        setData: (data) => dispatch(setData(data))
     }
 };
 

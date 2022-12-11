@@ -11,8 +11,33 @@ Globals:
   Api:
     Cors:
       AllowMethods: "'GET,POST,OPTIONS'"
-      AllowHeaders: "'content-type'"
+      AllowHeaders: "'Content-Type,X-Amz-Date,X-Amz-Security-Token,Authorization,X-Api-Key,X-Requested-With,Accept,Access-Control-Allow-Methods,Access-Control-Allow-Origin,Access-Control-Allow-Headers'"
       AllowOrigin: "'*'"
+    GatewayResponses:
+      UNAUTHORIZED:
+        StatusCode: 401
+        ResponseParameters:
+          Headers:
+            Access-Control-Allow-Origin: "'*'"
+      ACCESS_DENIED:
+        StatusCode: 403
+        ResponseParameters:
+          Headers:
+            Access-Control-Allow-Origin: "'*'"
+      DEFAULT_5XX:
+        StatusCode: 500
+        ResponseParameters:
+          Headers:
+            Access-Control-Allow-Origin: "'*'"
+      RESOURCE_NOT_FOUND:
+        StatusCode: 404
+        ResponseParameters:
+          Headers:
+            Access-Control-Allow-Origin: "'*'"
+    Auth:
+      Authorizers:
+        LambdaTokenAuthorizer:
+          FunctionArn: !GetAtt Authorizer.Arn
 
 Resources:
   Authorizer:
@@ -40,6 +65,8 @@ Resources:
           Properties:
             Path: /post_data
             Method: post
+            Auth:
+              Authorizer: LambdaTokenAuthorizer
 
       Policies:
         - AmazonDynamoDBFullAccess
@@ -93,6 +120,7 @@ Resources:
           Properties:
             Path: /user_registration
             Method: post
+
       Policies:
         - AmazonDynamoDBFullAccess
 
@@ -110,6 +138,7 @@ Resources:
           Properties:
             Path: /login
             Method: post
+
       Policies:
         - AmazonDynamoDBFullAccess
       Environment:

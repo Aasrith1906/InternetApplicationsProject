@@ -45,13 +45,18 @@ function generatePolicyDocument(effect, methodArn) {
     return policyDocument;
 }
 
-exports.lambdaHandler = async (event, context) => {
+exports.lambdaHandler = async (event, context, callback) => {
 
     response = {
         statusCode: 200,
         body: JSON.stringify({}),
         isBase64Encoded: false,
-        headers: {}
+        headers: {
+            "Access-Control-Allow-Headers": "*",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "*",
+            "Access-Control-Allow-Credentials": true
+        }
     }
     try {
         const token = event.authorizationToken.replace("Bearer ", "");
@@ -63,7 +68,6 @@ exports.lambdaHandler = async (event, context) => {
 
         // verifies token
         const decoded = jwt.verify(token, secret);
-
         if (decoded && decoded.id) {
             return callback(null, generateAuthResponse(decoded.id, "Allow", methodArn));
         } else {
@@ -72,6 +76,6 @@ exports.lambdaHandler = async (event, context) => {
 
     } catch (err) {
         console.log(err);
-        return callback(null, generateAuthResponse(decoded.id, "Deny", methodArn));
+        return callback(err, generateAuthResponse(decoded.id, "Deny", methodArn));
     }
 };

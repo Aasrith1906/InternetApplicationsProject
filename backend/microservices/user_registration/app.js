@@ -47,9 +47,10 @@ exports.lambdaHandler = async (event, context) => {
         body: JSON.stringify({}),
         isBase64Encoded: false,
         headers: {
-            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Allow-Headers": "*",
             "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Methods": "POST"
+            "Access-Control-Allow-Methods": "*",
+            "Access-Control-Allow-Credentials": true
         }
     }
 
@@ -61,6 +62,7 @@ exports.lambdaHandler = async (event, context) => {
         var continue_ = await checkUserExists(ddb, item_params.username.S)
         if (continue_ == true) {
             response.body = JSON.stringify({ "message": "user already exists" })
+            response.statusCode = 409
             return response
         }
         params = {

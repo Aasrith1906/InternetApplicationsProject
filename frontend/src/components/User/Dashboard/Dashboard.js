@@ -34,6 +34,10 @@ class Dashboard extends Component {
                             <Typography component="h1" variant="h5" color="text.primary" alignContent="center">
                                 User Dashboard
                             </Typography>
+                            <br></br>
+                            <Typography component="h1" variant="h5" color="text.primary" alignContent="center">
+                                Welcome {this.props.userInfo.value.username}
+                            </Typography>
                             <br>
                             </br>
                             <Typography component="h4" variant="h6" color="text.primary" alignContent="center">
@@ -53,7 +57,8 @@ class Dashboard extends Component {
 const mapStateToProps = (state) => {
     return {
         isLoggedIn: state.isLoggedIn,
-        apiToken: state.apiToken
+        apiToken: state.apiToken,
+        userInfo: state.userInfo
     }
 }
 

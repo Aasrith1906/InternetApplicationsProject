@@ -23,7 +23,7 @@ AWS.config.update({ region: 'eu-west-2' });
 async function signToken(user) {
     const secret = Buffer.from(process.env.JWT_SECRET, "base64");
 
-    return jwt.sign({ username: user.username.S, roles: ["USER"] }, secret, {
+    return jwt.sign({ id: user.username.S, roles: ["USER"] }, secret, {
         expiresIn: 86400 // expires in 24 hours
     });
 }
@@ -54,9 +54,10 @@ exports.lambdaHandler = async (event, context) => {
         body: JSON.stringify({}),
         isBase64Encoded: false,
         headers: {
-            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Allow-Headers": "*",
             "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Methods": "POST"
+            "Access-Control-Allow-Methods": "*",
+            "Access-Control-Allow-Credentials": true
         }
     }
 
@@ -67,7 +68,7 @@ exports.lambdaHandler = async (event, context) => {
         item_params = event
         var continue_ = await checkUserExists(ddb, item_params.username.S)
         if (continue_ == false) {
-            response.statusCode = 200
+            response.statusCode = 404
             response.body = JSON.stringify({ "message": "user doesn't exists" })
             return response
         }

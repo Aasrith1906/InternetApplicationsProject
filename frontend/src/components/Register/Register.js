@@ -11,7 +11,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { theme } from '../common/Theme';
-import { ThemeProvider } from '@mui/material';
+import { Alert, ThemeProvider } from '@mui/material';
 import axios from 'axios';
 import { API_URL, ddbMarshall } from '../common/Api';
 import { encryptString } from '../common/Encrypt';
@@ -22,27 +22,28 @@ export class Register extends Component {
 
     constructor(props) {
         super(props)
-        this.state = { "redirect": false }
+        this.state = { "redirect": false, "error": false, "alreadyExists": false }
     }
 
     updateState = () => {
         this.setState((state, props) => ({ "redirect": true }))
     }
 
+    validate_params = (api_params) => {
+        var required_keys = ["firstname", "lastname", "username", "password"]
+        for (const key of required_keys) {
+            if (api_params[key] == "") {
+                return false
+            }
+        }
+        return true
+    }
+
+
     handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
 
-        function validate_params(api_params) {
-            var required_keys = ["username", "password"]
-            for (const key of required_keys) {
-                console.log(key)
-                if (api_params[key] == "") {
-                    return false
-                }
-            }
-            return true
-        }
 
         Date.prototype.today = function () {
             return ((this.getDate() < 10) ? "0" : "") + this.getDate() + "/" + (((this.getMonth() + 1) < 10) ? "0" : "") + (this.getMonth() + 1) + "/" + this.getFullYear();
@@ -63,25 +64,35 @@ export class Register extends Component {
         };
 
         console.log(api_params)
-        var validation = validate_params(api_params)
+        var validation = this.validate_params(api_params)
 
         if (validation == false) {
             console.log("Invalid Parameters");
+            this.setState({ "error": true })
             return
         }
         var api_params_marshalled = ddbMarshall(api_params)
         console.log(api_params_marshalled)
 
-
+        let config = {
+            headers: {
+                "Content-Type": "application/json",
+                'Access-Control-Allow-Origin': '*',
+            }
+        }
 
         axios.post(
             API_URL + "/user_registration",
-            api_params_marshalled
+            api_params_marshalled,
+            config
         ).then((r) => {
-            console.log(r)
 
             if (r.status == 200) {
                 this.updateState()
+            }
+
+            if (r.status == 409) {
+                this.setState({ "alreadyExists": true })
             }
 
         }).catch(
@@ -95,7 +106,10 @@ export class Register extends Component {
 
         if (!this.state.redirect) {
             return (
-                <ThemeProvider theme={theme}>
+
+                < ThemeProvider theme={theme} >
+
+
                     <Container component="main" maxWidth="xs">
                         <CssBaseline />
 
@@ -107,6 +121,13 @@ export class Register extends Component {
                                 alignItems: 'center',
                             }}
                         >
+                            <br></br>
+                            {
+                                this.state.alreadyExists && (
+                                    <Alert severity="error">User Already Exists !!!</Alert>
+                                )
+                            }
+                            <br></br>
                             <Avatar sx={{ m: 1, bgcolor: 'primary.main' }}>
                                 <LockOutlinedIcon />
                             </Avatar>
@@ -119,6 +140,8 @@ export class Register extends Component {
                                         <TextField
                                             autoComplete="given-name"
                                             name="firstName"
+                                            error={this.state.error}
+                                            helperText={this.state.error && ("Incorrect Entry")}
                                             required
                                             fullWidth
                                             id="firstName"
@@ -130,9 +153,11 @@ export class Register extends Component {
                                         <TextField
                                             required
                                             fullWidth
+                                            error={this.state.error}
                                             id="lastName"
                                             label="Last Name"
                                             name="lastName"
+                                            helperText={this.state.error && ("Incorrect Entry")}
                                             autoComplete="family-name"
                                         />
                                     </Grid>
@@ -140,9 +165,11 @@ export class Register extends Component {
                                         <TextField
                                             required
                                             fullWidth
+                                            error={this.state.error}
                                             id="username"
                                             label="Username/Email"
                                             name="username"
+                                            helperText={this.state.error && ("Incorrect Entry")}
                                             autoComplete="email"
                                         />
                                     </Grid>
@@ -150,10 +177,17 @@ export class Register extends Component {
                                         <TextField
                                             required
                                             fullWidth
+                                            error={this.state.error}
                                             name="password"
                                             label="Password"
                                             type="password"
+                                            inputProps={{
+                                                maxLength: 25,
+                                                minLength: 8
+                                            }}
+
                                             id="password"
+                                            helperText={this.state.error && ("Password Needs to be 8 characters")}
                                             autoComplete="new-password"
                                         />
                                     </Grid>
@@ -176,10 +210,12 @@ export class Register extends Component {
                             </Box>
                         </Box>
                     </Container>
-                </ThemeProvider>
+                </ThemeProvider >
             )
         } else {
-            return <Navigate to={{ "pathname": "/login" }} />
+            return <>
+                <Navigate to={{ "pathname": "/login" }} />
+            </>
         }
     }
 }

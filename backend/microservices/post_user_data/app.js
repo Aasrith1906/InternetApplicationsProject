@@ -30,6 +30,8 @@ const {
 */
 
 var S3BucketName = "hlsp-data-lake"
+var ddb = new AWS.DynamoDB({ apiVersion: '2012-08-10' });
+AWS.config.update({ region: 'eu-west-2' });
 
 async function getS3Directory(input_data) {
 
@@ -70,6 +72,26 @@ async function checkUserExists(ddb, username) {
     }
 }
 
+async function checkUserDataExists(ddb, username) {
+    var params = {
+        ExpressionAttributeValues: {
+            ":v1": {
+                S: username
+            }
+        },
+        KeyConditionExpression: "username = :v1",
+        TableName: "hlsp_datastore"
+    };
+
+    output = await ddb.query(params).promise()
+    console.log(output)
+    if (output.Count > 0) {
+        return true
+    } else {
+        return false
+    }
+}
+
 async function pushToS3(bucket_name, file_path, data) {
     var params = {
         Bucket: bucket_name,
@@ -80,13 +102,67 @@ async function pushToS3(bucket_name, file_path, data) {
     output = await s3.upload(params).promise()
 }
 
+function getUpdateExpression(data) {
+    var string = "set "
+    for (const [key, value] of Object.entries(data)) {
+        if (key === "username") {
+
+        } else {
+            string += `${key}=:${key}, `
+        }
+    }
+    return string
+}
+function getUpdateExpressionAttrValues(input_data) {
+    var data = {}
+    for (const [key, value] of Object.entries(input_data)) {
+        data[`:${key}`] = value
+    }
+    return data
+}
+async function updateDDB(data) {
+    var username = data.username
+    var tableName = "hlsp_datastore"
+    let updateExpression = 'set';
+    let ExpressionAttributeNames = {};
+    let ExpressionAttributeValues = {};
+    for (const property in data) {
+        if (property !== 'username' && property !== 'datatype') {
+            updateExpression += ` #${property} = :${property} ,`;
+            ExpressionAttributeNames['#' + property] = property;
+            ExpressionAttributeValues[':' + property] = data[property];
+        }
+    }
+    ExpressionAttributeValues = AWS.DynamoDB.Converter.marshall(ExpressionAttributeValues)
+    updateExpression = updateExpression.slice(0, -1);
+    var updateParams = {
+        TableName: tableName,
+        Key: {
+            "username": {
+                "S": username
+            }
+        },
+        UpdateExpression: updateExpression,
+        ExpressionAttributeNames: ExpressionAttributeNames,
+        ExpressionAttributeValues: ExpressionAttributeValues
+    }
+    console.log(updateParams)
+    var output = await ddb.updateItem(updateParams).promise()
+    console.log(output)
+    return output
+}
+
 exports.lambdaHandler = async (event, context) => {
 
     response = {
         statusCode: 200,
         body: JSON.stringify({}),
         isBase64Encoded: false,
-        headers: {}
+        headers: {
+            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "POST"
+        }
     }
 
     try {
@@ -104,13 +180,14 @@ exports.lambdaHandler = async (event, context) => {
 
         directory = await getS3Directory(item_params)
         output = await pushToS3(S3BucketName, directory, item_params)
-        response.body = JSON.stringify(output)
+        output_ddb = await updateDDB(item_params)
+        response.body = JSON.stringify({ "message": "Pushed data to s3 and dynamodb" })
         return response
 
     } catch (err) {
         console.log(err);
         response.statusCode = 500
-        response.body = JSON.stringify({ "message": err })
+        response.body = JSON.stringify({ "message": "An Error has occurred" })
         return response;
     }
 };

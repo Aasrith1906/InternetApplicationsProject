@@ -33,7 +33,12 @@ const data_types = [
 export class AddData extends Component {
     constructor(props) {
         super(props)
-        this.state = { "data_type": "" }
+    }
+
+    handleSubmit = (event) => {
+        event.preventDefault();
+        const data = new FormData(event.currentTarget);
+        console.log(data)
     }
     render() {
         return (
@@ -50,29 +55,31 @@ export class AddData extends Component {
                                 flexDirection: 'column',
                                 alignItems: 'center',
                             }}
+
+
                         >
-                            <FormControl fullWidth>
-                                <InputLabel>Data Type</InputLabel>
-                                <Select
-                                    label="Data Type"
-                                >{
-                                        data_types.map((type_) => (
-                                            <MenuItem value={type_}>{type_}</MenuItem>
-                                        ))
-                                    }
+                            <Box component="form" noValidate onSubmit={this.handleSubmit} sx={{ mt: 3 }}>
+                                <FormControl fullWidth>
+                                    <InputLabel>Data Type</InputLabel>
+                                    <Select
+                                        label="Data Type"
+                                    >
+                                        <MenuItem value={"Weight"} label="Weight">Weight</MenuItem>
 
-                                </Select>
-                                <br></br>
-                                <TextField id="outlined-basic" label="Enter Data" variant="outlined" />
-                                <br></br>
-                                <Button
-                                    variant="contained"
-                                    startIcon={<AddCircleIcon />}
-                                >
-                                    Submit
+                                    </Select>
+                                    <br></br>
+                                    <TextField id="datavalue" name="datavalue" label="Enter Data" variant="outlined" />
+                                    <br></br>
+                                    <Button
+                                        variant="submit"
+                                        startIcon={<AddCircleIcon />}
 
-                                </Button>
-                            </FormControl>
+                                    >
+                                        Submit
+
+                                    </Button>
+                                </FormControl>
+                            </Box>
                         </Box>
                     </Container>
                 </ThemeProvider>
