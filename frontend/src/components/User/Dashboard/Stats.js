@@ -5,15 +5,16 @@ import { theme } from "../../common/Theme";
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import CssBaseline from "@mui/material/CssBaseline";
-import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import { AddData } from "./AddData";
-import { Button } from "@material-ui/core";
-import FormControl from '@mui/material/FormControl';
-import Collapse from "@mui/material/Collapse";
 import { AddDataController } from "./AddDataController";
+import { connect } from "react-redux";
+import { ShowStats } from "./ShowStats";
 
-export class Stats extends Component {
+
+
+
+class Stats extends Component {
 
     constructor(props) {
         super(props)
@@ -44,9 +45,10 @@ export class Stats extends Component {
     render() {
         return (
             <>
+
                 <ThemeProvider theme={theme}>
 
-                    <Container component="main" maxWidth="xs">
+                    <Container component="main" >
                         <CssBaseline />
                         <Box
                             sx={{
@@ -58,82 +60,16 @@ export class Stats extends Component {
                         >
                             <Sidebar />
                             <br></br>
-                            <Typography component="h1" variant="h5" color="text.primary" alignContent="center">
-                                Medical Stats
+                            <Typography component="h1" variant="h3" color="text.primary" alignContent="center">
+                                Medical Stats and Analytics
                             </Typography>
 
                         </Box>
 
 
                         <br />
-                        <Grid container rowSpacing={10} columnSpacing={{ xs: 1, sm: 2, md: 3 }} justify="space-between">
-                            <Grid item xs={6}>
-                                <Box
-                                    sx={{
-                                        bgcolor: 'background.paper',
-                                        boxShadow: 10,
-                                        borderRadius: 2,
-                                        p: 2,
-                                        minWidth: 300,
-                                    }}
-                                >
-                                    <Box sx={{ color: 'text.secondary' }}>
-                                        Avg Heart Rate
-                                    </Box>
-                                    <Box sx={{ color: 'text.primary', fontSize: 34, fontWeight: 'medium' }}>
-                                        101 bp/s
-                                    </Box>
-                                    <Box
-                                        sx={{
-                                            color: 'success.dark',
-                                            display: 'inline',
-                                            fontWeight: 'bold',
-                                            mx: 0.5,
-                                            fontSize: 14,
-                                        }}
-                                    >
-                                        +18.77%
-                                    </Box>
-                                    <Box sx={{ color: 'text.secondary', display: 'inline', fontSize: 14 }}>
-                                        vs. last week
-                                    </Box>
-                                </Box>
-                                <br></br>
-                                <Grid item xs={6}>
-                                    <Box
-                                        sx={{
-                                            bgcolor: 'background.paper',
-                                            boxShadow: 10,
-                                            borderRadius: 2,
-                                            p: 2,
-                                            minWidth: 300,
-                                        }}
-                                    >
-                                        <Box sx={{ color: 'text.secondary' }}>
-                                            Avg Calorie Burn Rate
-                                        </Box>
-                                        <Box sx={{ color: 'text.primary', fontSize: 34, fontWeight: 'medium' }}>
-                                            1500 kcal
-                                        </Box>
-                                        <Box
-                                            sx={{
-                                                color: 'success.dark',
-                                                display: 'inline',
-                                                fontWeight: 'bold',
-                                                mx: 0.5,
-                                                fontSize: 14,
-                                            }}
-                                        >
-                                            +20.77%
-                                        </Box>
-                                        <Box sx={{ color: 'text.secondary', display: 'inline', fontSize: 14 }}>
-                                            vs. last week
-                                        </Box>
-                                    </Box>
-                                </Grid>
+                        <ShowStats />
 
-                            </Grid>
-                        </Grid>
 
                     </Container>
                 </ThemeProvider>
@@ -150,3 +86,15 @@ export class Stats extends Component {
         )
     }
 }
+
+const mapStateToProps = (state) => {
+    return {
+        isLoggedIn: state.isLoggedIn,
+        apiToken: state.apiToken,
+        userInfo: state.userInfo
+    }
+}
+
+Stats = connect(mapStateToProps, null)(Stats)
+
+export { Stats }

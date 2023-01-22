@@ -12,7 +12,6 @@ import {
 import { Login } from "../Login/Login";
 import { ThemeProvider } from '@mui/material/styles';
 import { AppBar } from "@mui/material";
-import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
@@ -24,7 +23,7 @@ import { MedicalInformation } from "../User/Dashboard/MedicalInformation";
 import { Stats } from "../User/Dashboard/Stats";
 import { Navigate } from "react-router-dom";
 import { connect } from "react-redux";
-
+import { Logout } from "./Logout";
 
 const ProtectedRoute = ({ isLoggedIn, children }) => {
     if (!isLoggedIn) {
@@ -37,6 +36,8 @@ const ProtectedRoute = ({ isLoggedIn, children }) => {
 class NavbarCommon extends Component {
     constructor(props) {
         super(props)
+        console.log(this.props.isLoggedIn)
+        console.log(this.props.apiToken)
     }
 
     render() {
@@ -49,10 +50,27 @@ class NavbarCommon extends Component {
                                 <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                                     <Link className="nav-link" to="/"> HLSP </Link>
                                 </Typography>
-                                <Button>
-                                    <Link className="nav-link" to="/register"> Register </Link>
-                                </Button>
-                                <Button color="inherit"><Link className="nav-link" to="/login"> Login </Link></Button>
+
+
+                                {this.props.isLoggedIn.value === false && (
+                                    <>
+                                        <Button>
+                                            <Link className="nav-link" to="/register"> Register </Link>
+                                        </Button>
+                                        <Button color="inherit"><Link className="nav-link" to="/login"> Login </Link></Button>
+                                    </>
+                                )
+                                }
+
+                                {
+                                    this.props.isLoggedIn.value === true && (
+                                        <>
+
+                                            <Button color="inherit"><Link className="nav-link" to="/logout"> Logout </Link></Button>
+                                        </>
+                                    )
+                                }
+
                             </Toolbar>
                         </AppBar>
 
@@ -62,6 +80,7 @@ class NavbarCommon extends Component {
                             <Route path="*" element={<NotFound />} />
                             <Route path="login" element={<Login />} />
                             <Route path="register" element={<Register />} />
+                            <Route path="logout" element={<Logout />} />
 
                             <Route path="dashboard" element={
                                 <ProtectedRoute isLoggedIn={this.props.isLoggedIn.value}>

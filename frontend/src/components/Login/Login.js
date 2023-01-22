@@ -20,17 +20,29 @@ import { setTrue } from "../common/redux/loggedInSlicer";
 import { setToken } from "../common/redux/apiTokenSlicer";
 import { setData } from "../common/redux/userInfoSlicer";
 import { connect } from "react-redux"
-import { useDispatch } from 'react-redux'
 import Alert from "@mui/material/Alert";
 import { ddbMarshall, API_URL } from "../common/Api";
 import axios from 'axios';
+import { loadState } from "../common/redux/localStorage";
 
 class Login extends Component {
 
     constructor(props) {
         super(props)
         this.state = { redirect: false, error: false, loginError: false }
+        console.log(this.props.isLoggedIn.value)
+        if (this.props.isLoggedIn.value === true) {
+            this.setState({ redirect: true })
+        }
         this.handleSubmit = this.handleSubmit.bind(this)
+
+        var state = loadState()
+        if (loadState() != null) {
+            var apiToken = state['state']
+            this.props.setToken(apiToken)
+            this.props.setTrue()
+            window.location.reload(false)
+        }
 
     }
 
@@ -50,7 +62,7 @@ class Login extends Component {
             password: data.get('password')
         }
         var validation = this.validateForm(api_params)
-        if (validation == false) {
+        if (validation === false) {
             this.setState({ error: true })
         }
         api_params["password"] = encryptString(api_params["password"])
@@ -62,7 +74,7 @@ class Login extends Component {
         ).then((r) => {
             console.log(r)
 
-            if (r.status == 200) {
+            if (r.status === 200) {
                 this.updateState()
                 this.props.setToken(r.data.token)
                 this.props.setData({ username: api_params.username })
@@ -79,9 +91,11 @@ class Login extends Component {
 
     render() {
 
-        if (this.state.redirect == false) {
+        if (this.state.redirect === false) {
             return (
+
                 <ThemeProvider theme={theme}>
+
                     <Container component="main" maxWidth="xs">
                         <CssBaseline />
 
@@ -111,7 +125,7 @@ class Login extends Component {
                             <Typography component="h1" variant="h5" color="text.primary">
                                 Sign in
                             </Typography>
-                            <Box component="form" noValidate onSubmit={this.handleSubmit} sx={{ mt: 1 }}>
+                            <Box component="form" onSubmit={this.handleSubmit} sx={{ mt: 1 }}>
                                 <TextField
                                     margin="normal"
                                     required
@@ -121,6 +135,7 @@ class Login extends Component {
                                     id="email"
                                     label="Email Address"
                                     name="email"
+                                    type="email"
                                     autoComplete="email"
                                     autoFocus
 
@@ -158,6 +173,7 @@ class Login extends Component {
                                     <Grid item>
                                         <Link to="/register" variant="body2">
                                             {"Don't have an account? Sign Up"}
+                                            {this.props.isLoggedIn.value}
                                         </Link>
                                     </Grid>
                                 </Grid>

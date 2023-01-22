@@ -1,45 +1,38 @@
 
 import * as React from 'react';
 import { Component } from 'react';
-import AppBar from '@mui/material/AppBar';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
 import CssBaseline from '@mui/material/CssBaseline';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { Link } from 'react-router-dom';
 import { theme } from '../common/Theme';
 import { ThemeProvider } from '@mui/material';
+import { setTrue } from "../common/redux/loggedInSlicer";
+import { setToken } from "../common/redux/apiTokenSlicer";
+import { setData } from "../common/redux/userInfoSlicer";
+import { connect } from "react-redux"
+import { loadState } from '../common/redux/localStorage';
 
 
+class LandingPage extends Component {
 
-const card_info = [
-    {
-        img: "https://source.unsplash.com/random",
-        heading: "Health",
-        text: "Health is wealth add content"
-    },
-    {
-        img: "https://source.unsplash.com/random",
-        heading: "Health",
-        text: "Health is wealth add content"
-    },
-    {
-        img: "https://source.unsplash.com/random",
-        heading: "Health",
-        text: "Health is wealth add content"
+    constructor(props) {
+        super(props)
+
+        var state = loadState()
+        if (loadState() != null) {
+            var apiToken = state['state']
+            this.props.setToken(apiToken)
+            this.props.setTrue()
+        }
     }
-]
-
-export class LandingPage extends Component {
-
     render() {
         return (
             <>
@@ -170,3 +163,23 @@ export class LandingPage extends Component {
         )
     }
 }
+
+
+const mapStateToProps = (state) => {
+    return {
+        isLoggedIn: state.isLoggedIn,
+        apiToken: state.apiToken
+    }
+}
+
+const mapDispatchToProps = (dispatch, ownProps) => {
+    return {
+        setTrue: () => dispatch(setTrue()),
+        setToken: (token) => dispatch(setToken(token)),
+        setData: (data) => dispatch(setData(data))
+    }
+};
+
+LandingPage = connect(mapStateToProps, mapDispatchToProps)(LandingPage)
+export { LandingPage }
+

@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
+import { saveState } from './localStorage'
 
 export const apiToken = createSlice({
     name: 'apiToken',
@@ -8,6 +9,7 @@ export const apiToken = createSlice({
     reducers: {
         setToken: (state, action) => {
             state.value = action.payload
+            saveState(state.value)
         }
     },
 })

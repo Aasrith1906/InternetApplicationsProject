@@ -6,6 +6,7 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import CssBaseline from "@mui/material/CssBaseline";
 import Box from '@mui/material/Box';
+import { ShowStats } from "./ShowStats";
 import { connect } from "react-redux";
 
 class Dashboard extends Component {
@@ -19,7 +20,7 @@ class Dashboard extends Component {
             <>
                 <ThemeProvider theme={theme}>
 
-                    <Container component="main" maxWidth="xs">
+                    <Container component="main" >
                         <CssBaseline />
                         <Box
                             sx={{
@@ -31,7 +32,7 @@ class Dashboard extends Component {
                         >
                             <Sidebar />
                             <br></br>
-                            <Typography component="h1" variant="h5" color="text.primary" alignContent="center">
+                            <Typography component="h1" variant="h3" color="text.primary" alignContent="center">
                                 User Dashboard
                             </Typography>
                             <br></br>
@@ -45,6 +46,8 @@ class Dashboard extends Component {
                                 User Dashboard shows information summarised from the different dashboards.
                                 Use the sidebar to navigate between the different dashboards
                             </Typography>
+                            <br></br>
+                            <ShowStats topStats={2} />
                         </Box>
                     </Container>
                 </ThemeProvider>

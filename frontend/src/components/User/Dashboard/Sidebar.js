@@ -51,12 +51,12 @@ export default function Sidebar() {
                 }}
             >
                 <Toolbar />
-                <Box sx={{ overflow: 'auto' }}>
+                <Box >
                     <List>
                         {Object.entries(feature_icon_mapping).map(([key, value]) => (
                             <ListItem key={key} sx={{ flexGrow: 1 }}>
                                 <Link className="nav-link" to={"/" + key} color={theme.palette.primary}>
-                                    <ListItemButton>
+                                    <ListItemButton sx={{ flexGrow: 1 }}>
                                         <ListItemIcon>
                                             {value}
                                         </ListItemIcon>
