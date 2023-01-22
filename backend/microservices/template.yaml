@@ -38,6 +38,8 @@ Globals:
       Authorizers:
         LambdaTokenAuthorizer:
           FunctionArn: !GetAtt Authorizer.Arn
+          Identity:
+            ReauthorizeEvery: 0
 
 Resources:
   Authorizer:
@@ -71,6 +73,80 @@ Resources:
       Policies:
         - AmazonDynamoDBFullAccess
         - AmazonS3FullAccess
+
+  UpdateUserAggregates:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: update_ud_aggregate/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+
+      Policies:
+        - AmazonDynamoDBFullAccess
+        - AmazonS3FullAccess
+
+  PostClickData:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: post_data_clicks/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      Events:
+        GetMetadata:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /post_data_clicks
+            Method: post
+            Auth:
+              Authorizer: LambdaTokenAuthorizer
+
+      Policies:
+        - AmazonDynamoDBFullAccess
+        - AmazonS3FullAccess
+
+  GetUserData:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: get_user_data/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      Events:
+        GetMetadata:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /get_stats
+            Method: post
+            Auth:
+              Authorizer: LambdaTokenAuthorizer
+
+      Policies:
+        - AmazonDynamoDBFullAccess
+
+  GetRecommendations:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: get_recommendations/
+      Handler: app.lambdaHandler
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      Events:
+        GetMetadata:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /get_recommendations
+            Method: post
+            Auth:
+              Authorizer: LambdaTokenAuthorizer
+
+      Policies:
+        - AmazonDynamoDBFullAccess
 
   UserRegistrationFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction

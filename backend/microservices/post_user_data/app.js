@@ -1,14 +1,3 @@
-// const axios = require('axios')
-// const url = 'http://checkip.amazonaws.com/';
-let response;
-var AWS = require('aws-sdk');
-var s3 = new AWS.S3({ apiVersion: '2006-03-01' });
-var ddb = new AWS.DynamoDB({ apiVersion: '2012-08-10' });
-AWS.config.update({ region: 'eu-west-2' });
-
-const {
-    randomUUID
-} = import('node:crypto');
 
 
 /**
@@ -29,8 +18,18 @@ const {
     This Lambda function pushes data into the hlsp-data-lake 
 */
 
-var S3BucketName = "hlsp-data-lake"
+let response;
+var AWS = require('aws-sdk');
+var s3 = new AWS.S3({ apiVersion: '2006-03-01' });
 var ddb = new AWS.DynamoDB({ apiVersion: '2012-08-10' });
+AWS.config.update({ region: 'eu-west-2' });
+
+const {
+    randomUUID
+} = import('node:crypto');
+
+
+var S3BucketName = "hlsp-data-lake"
 AWS.config.update({ region: 'eu-west-2' });
 
 async function getS3Directory(input_data) {
@@ -43,8 +42,8 @@ async function getS3Directory(input_data) {
     var data_type = input_data.data_type
     var date = new Date()
     let year = date.getFullYear()
-    let month = date.getMonth()
-    let day = date.getDay()
+    let month = date.getMonth() + 1
+    let day = date.getDate()
 
     var directory = `${data_type}/${user}/${year}/${month}/${day}/${randomUUID()}`
 
@@ -127,7 +126,7 @@ async function updateDDB(data) {
     let ExpressionAttributeNames = {};
     let ExpressionAttributeValues = {};
     for (const property in data) {
-        if (property !== 'username' && property !== 'datatype') {
+        if (property !== 'username' && property !== 'data_type') {
             updateExpression += ` #${property} = :${property} ,`;
             ExpressionAttributeNames['#' + property] = property;
             ExpressionAttributeValues[':' + property] = data[property];
@@ -190,4 +189,4 @@ exports.lambdaHandler = async (event, context) => {
         response.body = JSON.stringify({ "message": "An Error has occurred" })
         return response;
     }
-};
+ };
